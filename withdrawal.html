@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grow Funds Network - Withdraw</title>
+<style>
+body { background-color: #000; color: #00FF00; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+form { background-color: #111; padding: 30px; border: 1px solid #00FF00; border-radius: 8px; width: 400px; }
+input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #00FF00; background-color: #000; color: #00FF00; }
+button { width: 100%; padding: 10px; background-color: #00FF00; color: #000; border: none; cursor: pointer; }
+button:hover { opacity: 0.8; }
+.toggle { position: fixed; top: 20px; right: 20px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="toggle" onclick="toggleTheme()">Toggle Theme</div>
+<form id="withdrawForm">
+<h2>Withdraw Funds</h2>
+<input type="text" id="amount" placeholder="Amount" required>
+<input type="text" id="wallet" placeholder="Wallet Address / Bank Account" required>
+<button type="submit">Submit Withdrawal</button>
+<p><a href="dashboard.html">Back to Dashboard</a></p>
+</form>
+
+<script>
+function toggleTheme(){
+if(document.body.style.backgroundColor === 'white'){
+    document.body.style.backgroundColor = '#000';
+    document.body.style.color = '#00FF00';
+} else {
+    document.body.style.backgroundColor = '#fff';
+    document.body.style.color = '#000';
+}
+}
+
+document.getElementById('withdrawForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    alert('Withdrawal request submitted (placeholder)');
+    window.location.href = 'dashboard.html';
+});
+</script>
+</body>
+</html>
