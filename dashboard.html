@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grow Funds Network - Dashboard</title>
+<style>
+body { background-color: #000; color: #00FF00; font-family: Arial, sans-serif; margin: 0; }
+.container { width: 90%; margin: 0 auto; max-width: 1200px; }
+header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #00FF00; }
+header h1 { font-size: 28px; }
+nav a { margin-left: 20px; color: #00FF00; }
+.toggle { position: fixed; top: 20px; right: 20px; cursor: pointer; }
+.dashboard { padding: 50px 0; }
+.card { background-color: #111; padding: 20px; margin-bottom: 20px; border: 1px solid #00FF00; border-radius: 8px; }
+.card h3 { margin-top: 0; }
+button { background-color: #00FF00; color: #000; border: none; padding: 10px 20px; cursor: pointer; }
+button:hover { opacity: 0.8; margin-right: 10px; }
+</style>
+</head>
+<body>
+<div class="toggle" onclick="toggleTheme()">Toggle Theme</div>
+
+<header class="container">
+<h1>Dashboard</h1>
+<nav>
+<a href="deposit.html">Deposit</a>
+<a href="withdraw.html">Withdraw</a>
+<a href="login.html">Logout</a>
+</nav>
+</header>
+
+<div class="container dashboard">
+<div class="card">
+<h3>Account Balance</h3>
+<p>$0.00 (Placeholder)</p>
+<button onclick="alert('Deposit placeholder')">Deposit</button>
+<button onclick="alert('Withdraw placeholder')">Withdraw</button>
+</div>
+
+<div class="card">
+<h3>Transaction History</h3>
+<p>No transactions yet.</p>
+</div>
+</div>
+
+<script>
+function toggleTheme(){
+if(document.body.style.backgroundColor === 'white'){
+    document.body.style.backgroundColor = '#000';
+    document.body.style.color = '#00FF00';
+} else {
+    document.body.style.backgroundColor = '#fff';
+    document.body.style.color = '#000';
+}
+}
+</script>
+</body>
+</html>
