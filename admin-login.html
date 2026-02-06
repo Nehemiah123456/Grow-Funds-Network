@@ -1,52 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grow Funds Network - Admin Login</title>
-<style>
-body { background-color: #000; color: #00FF00; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-form { background-color: #111; padding: 30px; border: 1px solid #00FF00; border-radius: 8px; width: 350px; }
-input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #00FF00; background-color: #000; color: #00FF00; }
-button { width: 100%; padding: 10px; background-color: #00FF00; color: #000; border: none; cursor: pointer; }
-button:hover { opacity: 0.8; }
-.toggle { position: fixed; top: 20px; right: 20px; cursor: pointer; }
-</style>
+  <title>Admin</title>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+  <script src="script.js"></script>
 </head>
 <body>
-<div class="toggle" onclick="toggleTheme()">Toggle Theme</div>
-<form id="adminLoginForm">
-<h2>Admin Login</h2>
-<input type="email" id="adminEmail" placeholder="Admin Email" required>
-<input type="password" id="adminPassword" placeholder="Password" required>
-<button type="submit">Login</button>
-<p><a href="login.html">Back to User Login</a></p>
-</form>
+
+<h2>Admin Panel</h2>
+
+<button onclick="loadUsers()">View Users</button>
+<div id="data"></div>
 
 <script>
-function toggleTheme(){
-if(document.body.style.backgroundColor === 'white'){
-    document.body.style.backgroundColor = '#000';
-    document.body.style.color = '#00FF00';
-} else {
-    document.body.style.backgroundColor = '#fff';
-    document.body.style.color = '#000';
+function loadUsers(){
+  firebase.firestore().collection("users").get()
+  .then(snapshot=>{
+    let out="";
+    snapshot.forEach(doc=>{
+      out+=doc.data().email+" - "+doc.data().balance+"<br>";
+    });
+    document.getElementById("data").innerHTML=out;
+  });
 }
-}
-
-document.getElementById('adminLoginForm').addEventListener('submit', function(e){
-    e.preventDefault();
-    const email = document.getElementById('adminEmail').value;
-    const password = document.getElementById('adminPassword').value;
-
-    // Fixed admin credentials
-    if(email === 'admin@growfunds.com' && password === 'admin123'){
-        alert('Admin login successful');
-        window.location.href = 'admin-dashboard.html';
-    } else {
-        alert('Invalid admin credentials');
-    }
-});
 </script>
+
 </body>
 </html>
