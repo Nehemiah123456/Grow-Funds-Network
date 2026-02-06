@@ -71,49 +71,68 @@ function updateDepositStatus(percent){
 
 // Registration
 function register() {
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-    const ssn = document.getElementById("ssn").value;
+    const ssn = document.getElementById("ssn").value.trim();
     const dlFile = document.getElementById("dl").files[0];
-    const referralCode = generateReferral();
+    const referralCode = generateReferral(); // random referral code
     const referrer = localStorage.getItem("referrer") || null;
 
-    if (!email || !password || !ssn || !dlFile) {
-        alert("Please fill all fields and upload your document");
+    if(!email || !password || !ssn || !dlFile) {
+        alert("Please fill all fields and upload your driver's license.");
         return;
     }
 
+    // Create user with Firebase Auth
     auth.createUserWithEmailAndPassword(email, password)
-    .then(user => {
-        const dlRef = storage.ref("kyc/" + user.user.uid + "_dl");
-        dlRef.put(dlFile).then(()=>console.log("DL uploaded"));
+    .then(userCredential => {
+        const user = userCredential.user;
 
-        db.collection("users").doc(user.user.uid).set({
+        console.log("User created with UID:", user.uid);
+
+        // Upload driver's license to Firebase Storage
+        const dlRef = storage.ref(`kyc/${user.uid}_dl`);
+        dlRef.put(dlFile)
+        .then(()=> console.log("Driver's license uploaded"))
+        .catch(err => console.error("Storage upload error:", err));
+
+        // Create Firestore document
+        db.collection("users").doc(user.uid).set({
             email: email,
-            balance: 15,
+            balance: 15, // starter bonus
             plan: "Free",
             referralCode: referralCode,
             referredBy: referrer,
             ssn: ssn,
-            created: new Date()
-        });
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(()=>{
+            console.log("Firestore document created for user:", user.uid);
 
-        if(referrer){
-            db.collection("users").where("referralCode","==",referrer).get()
-            .then(snapshot=>{
-                snapshot.forEach(doc=>{
-                    let oldBalance = doc.data().balance || 0;
-                    doc.ref.update({balance: oldBalance + 5});
+            // Update referrer bonus if any
+            if(referrer){
+                db.collection("users").where("referralCode","==",referrer).get()
+                .then(snapshot=>{
+                    snapshot.forEach(doc=>{
+                        const oldBalance = doc.data().balance || 0;
+                        doc.ref.update({balance: oldBalance + 5});
+                    });
                 });
-            });
-        }
+            }
 
-        alert("Account created! $15 bonus added.");
-        window.location="dashboard.html";
+            alert("Account successfully created! $15 bonus added.");
+            window.location = "dashboard.html";
+        })
+        .catch(err => {
+            console.error("Firestore error:", err);
+            alert("Error saving user data: " + err.message);
+        });
     })
-    .catch(err => alert(err.message));
+    .catch(err => {
+        console.error("Auth error:", err);
+        alert("Error creating account: " + err.message);
+    });
 }
-
 // Login
 function login() {
     const email = document.getElementById("email").value;
