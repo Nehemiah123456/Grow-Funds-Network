@@ -20,6 +20,55 @@ function generateReferral() {
     return "REF" + Math.floor(Math.random() * 1000000);
 }
 
+// Plan Requirements
+const plans = {
+  "starter": {min: 10, max: 97},
+  "builder": {min: 100, max: 999},
+  "income": {min: 1000, max: 9999},
+  "premium": {min: 10000, max: 99999},
+  "elite": {min: 100000, max: 1000000} // arbitrarily high
+};
+
+function makeDeposit() {
+    const user = auth.currentUser;
+    if(!user) return alert("Not logged in");
+
+    const plan = document.getElementById("planSelect").value;
+    const amount = parseFloat(document.getElementById("depositAmount").value);
+    const min = plans[plan].min;
+    const max = plans[plan].max;
+
+    if(!amount || amount < min) {
+        alert(`Minimum deposit for this plan is $${min}.`);
+        updateDepositStatus(0);
+        return;
+    }
+
+    if(amount > max) {
+        alert(`Maximum deposit for this plan is $${max}.`);
+        updateDepositStatus(100);
+        return;
+    }
+
+    // Update user plan and balance in Firestore
+    db.collection("users").doc(user.uid).update({
+        plan: plan,
+        balance: amount
+    }).then(()=>{
+        alert("Deposit recorded! Ask support to process actual payment.");
+        updateDepositStatus((amount/min)*100); // progress bar
+        document.getElementById("userPlan").innerText = plan;
+        document.getElementById("userBalance").innerText = amount;
+    });
+}
+
+// Update Deposit Progress Bar
+function updateDepositStatus(percent){
+    const progressBar = document.getElementById("depositProgress");
+    progressBar.style.width = Math.min(percent, 100) + "%";
+    document.getElementById("depositStatus").innerText = (percent>=100?"Complete":"Incomplete");
+}
+
 // Registration
 function register() {
     const email = document.getElementById("email").value;
