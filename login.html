@@ -1,29 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Login</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Grow Funds Network</title>
 
-  <!-- Firebase Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-  <script src="script.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+<script src="script.js"></script>
 
-  <!-- Link to style.css -->
-  <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+body{display:flex;justify-content:center;align-items:center;min-height:100vh;}
+.card{width:100%;max-width:400px;padding:40px;background:#151a33;border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,0.5);text-align:center;}
+.card h2{margin-bottom:25px;color:#00ffa6;}
+input[type="email"], input[type="password"]{width:100%;padding:15px;margin:10px 0 20px 0;border:none;border-radius:10px;background:#1c2240;color:#fff;font-size:16px;}
+input::placeholder{color:#888;}
+button{width:100%;padding:15px;background:#00ffa6;color:#000;font-weight:bold;font-size:16px;border:none;border-radius:10px;cursor:pointer;transition:0.3s;}
+button:hover{background:#00cc85;}
+p{margin-top:15px;color:#ccc;}
+a{color:#00ffa6;font-weight:bold;}
+</style>
 </head>
 <body>
 
-<div class="card" style="max-width:400px; margin:50px auto; text-align:center;">
-  <h2>Login</h2>
+<div class="card">
+  <h2>Login to Your Account</h2>
 
   <input id="email" type="email" placeholder="Email">
   <input id="password" type="password" placeholder="Password">
 
   <button onclick="login()">Login</button>
 
-  <p style="margin-top:15px; color:#ccc;">
-    Don't have an account? <a href="register.html">Register</a>
-  </p>
+  <p>Don't have an account? <a href="register.html">Register here</a></p>
 </div>
 
 </body>
