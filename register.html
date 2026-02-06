@@ -1,57 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grow Funds Network - Register</title>
-<style>
-    body { background-color: #000; color: #00FF00; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-    form { background-color: #111; padding: 30px; border: 1px solid #00FF00; border-radius: 8px; width: 350px; }
-    input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #00FF00; background-color: #000; color: #00FF00; }
-    button { width: 100%; padding: 10px; background-color: #00FF00; color: #000; border: none; cursor: pointer; }
-    button:hover { opacity: 0.8; }
-    .toggle { position: fixed; top: 20px; right: 20px; cursor: pointer; }
-</style>
+  <title>Register</title>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"></script>
+  <script src="script.js"></script>
 </head>
 <body>
-<div class="toggle" onclick="toggleTheme()">Toggle Theme</div>
-<form id="registerForm">
-    <h2>Register</h2>
-    <input type="text" id="fullname" placeholder="Full Name" required>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <input type="text" id="phone" placeholder="Phone Number" required>
-    <input type="text" id="kyc" placeholder="SSN or Driver's License" required>
-    <button type="submit">Register</button>
-    <p>Already have an account? <a href="login.html">Login</a></p>
-</form>
 
-<script>
-function toggleTheme(){
-    if(document.body.style.backgroundColor === 'white'){
-        document.body.style.backgroundColor = '#000';
-        document.body.style.color = '#00FF00';
-    } else {
-        document.body.style.backgroundColor = '#fff';
-        document.body.style.color = '#000';
-    }
-}
+<h2>Create Account</h2>
 
-document.getElementById('registerForm').addEventListener('submit', function(e){
-    e.preventDefault();
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    // Simulate sending OTP via email and SMS
-    alert(`An OTP has been sent to your email and phone number (simulated). Your OTP is: ${otp}`);
-    // Ask user to enter OTP
-    const userOtp = prompt('Please enter the OTP to confirm:');
-    if(userOtp == otp){
-        alert('OTP verified! Registration successful.');
-        window.location.href = 'dashboard.html';
-    } else {
-        alert('Incorrect OTP. Please try again.');
-    }
-});
-</script>
+<input id="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Password"><br><br>
+
+<button onclick="register()">Register</button>
+
 </body>
 </html>
