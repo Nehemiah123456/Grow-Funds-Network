@@ -1,28 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<link rel="stylesheet" href="style.css">
-  <title>User Dashboard</title>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"></script>
-  <script src="script.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Grow Funds Network</title>
 
-  <style>
-    body { font-family: Arial; background:#0c0f1a; color:white; padding:20px; }
-    h2 { text-align:center; }
-    .card { background:#151a33; padding:20px; border-radius:10px; margin-bottom:20px; }
-    .progress-bar { height:20px; background:#1c2240; border-radius:10px; margin-top:5px; }
-    .progress { height:20px; background:#00ffa6; border-radius:10px; width:0%; }
-    button { padding:10px 20px; background:#00ffa6; color:#000; border:none; border-radius:5px; cursor:pointer; }
-    .crypto { display:flex; justify-content:space-around; margin-top:20px; }
-    .crypto div { text-align:center; }
-  </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"></script>
+<script src="script.js"></script>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+.card{padding:20px;border-radius:10px;background:#151a33;margin-bottom:20px;}
+.progress-bar{height:22px;background:#1c2240;border-radius:10px;overflow:hidden;margin-top:10px;}
+.progress{height:100%;background:#00ffa6;width:0%;transition:width 0.5s;}
+.crypto{display:flex;justify-content:space-around;margin-top:20px;flex-wrap:wrap;}
+.crypto div{text-align:center;margin:10px;}
+</style>
 </head>
 <body>
 
-<h2>Dashboard</h2>
+<h2 style="text-align:center;">Dashboard</h2>
 
 <div class="card">
   <p><b>Email:</b> <span id="userEmail"></span></p>
@@ -65,55 +66,9 @@
 
 <script>
 firebase.auth().onAuthStateChanged(user=>{
-  if(user){ loadDashboard(); loadCryptoPrices(); loadReferralStats(); }
-  else { window.location="login.html"; }
+  if(user){ loadDashboard(); loadCryptoPrices(); }
+  else{ window.location="login.html"; }
 });
-
-function loadDashboard(){
-  const user = firebase.auth().currentUser;
-  db.collection("users").doc(user.uid).get()
-  .then(doc=>{
-    if(doc.exists){
-      const data = doc.data();
-      document.getElementById("userEmail").innerText = data.email;
-      document.getElementById("userBalance").innerText = data.balance;
-      document.getElementById("userPlan").innerText = data.plan;
-      document.getElementById("referralCode").innerText = data.referralCode;
-
-      // Update plan progress
-      let progressPercent = Math.min((data.balance/1000)*100,100); // Example: 1000 = next tier
-      document.getElementById("progress").style.width = progressPercent+"%";
-    }
-  });
-}
-
-// Referral stats
-function loadReferralStats(){
-  const user = firebase.auth().currentUser;
-  let count = 0;
-  let bonus = 0;
-
-  db.collection("users").where("referredBy","==", user.uid).get()
-  .then(snapshot=>{
-    snapshot.forEach(doc=>{
-      count++;
-      bonus += 5; // $5 per referral
-    });
-    document.getElementById("refCount").innerText = count;
-    document.getElementById("refBonus").innerText = bonus;
-  });
-}
-
-// Simple crypto price fetch (CoinGecko public API)
-function loadCryptoPrices(){
-  fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,tether&vs_currencies=usd")
-  .then(res=>res.json())
-  .then(data=>{
-    document.getElementById("btcPrice").innerText = "$"+data.bitcoin.usd;
-    document.getElementById("ethPrice").innerText = "$"+data.ethereum.usd;
-    document.getElementById("usdtPrice").innerText = "$"+data.tether.usd;
-  });
-}
 </script>
 
 </body>
