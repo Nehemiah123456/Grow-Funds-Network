@@ -1,21 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="style.css">
   <title>Login</title>
 
+  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
   <script src="script.js"></script>
+
+  <!-- Link to style.css -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Login</h2>
+<div class="card" style="max-width:400px; margin:50px auto; text-align:center;">
+  <h2>Login</h2>
 
-<input id="email" placeholder="Email"><br><br>
-<input id="password" type="password" placeholder="Password"><br><br>
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
 
-<button onclick="login()">Login</button>
+  <button onclick="login()">Login</button>
+
+  <p style="margin-top:15px; color:#ccc;">
+    Don't have an account? <a href="register.html">Register</a>
+  </p>
+</div>
 
 </body>
 </html>
