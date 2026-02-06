@@ -74,59 +74,52 @@ function register() {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
     const ssn = document.getElementById("ssn").value.trim();
-    const dlFile = document.getElementById("dl").files[0];
-    const referralCode = generateReferral(); // random referral code
-    const referrer = localStorage.getItem("referrer") || null;
+    const dlInput = document.getElementById("dl");
+    const dlFile = dlInput.files[0];
 
-    if(!email || !password || !ssn || !dlFile) {
+    if(!email || !password || !ssn || !dlFile){
         alert("Please fill all fields and upload your driver's license.");
         return;
     }
 
-    // Create user with Firebase Auth
+    const referralCode = "REF" + Math.floor(Math.random()*1000000);
+    const referrer = localStorage.getItem("referrer") || null;
+
+    console.log("Starting registration");
+    console.log("Email:", email);
+    console.log("DL File:", dlFile);
+
     auth.createUserWithEmailAndPassword(email, password)
     .then(userCredential => {
         const user = userCredential.user;
-
         console.log("User created with UID:", user.uid);
 
-        // Upload driver's license to Firebase Storage
+        // Upload Driver's License
         const dlRef = storage.ref(`kyc/${user.uid}_dl`);
         dlRef.put(dlFile)
-        .then(()=> console.log("Driver's license uploaded"))
+        .then(() => console.log("Driver's license uploaded"))
         .catch(err => console.error("Storage upload error:", err));
 
         // Create Firestore document
         db.collection("users").doc(user.uid).set({
             email: email,
-            balance: 15, // starter bonus
+            balance: 15,
             plan: "Free",
             referralCode: referralCode,
             referredBy: referrer,
             ssn: ssn,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         })
-        .then(()=>{
-            console.log("Firestore document created for user:", user.uid);
-
-            // Update referrer bonus if any
-            if(referrer){
-                db.collection("users").where("referralCode","==",referrer).get()
-                .then(snapshot=>{
-                    snapshot.forEach(doc=>{
-                        const oldBalance = doc.data().balance || 0;
-                        doc.ref.update({balance: oldBalance + 5});
-                    });
-                });
-            }
-
-            alert("Account successfully created! $15 bonus added.");
+        .then(() => {
+            console.log("Firestore document created successfully!");
+            alert("Account created! $15 bonus added.");
             window.location = "dashboard.html";
         })
         .catch(err => {
             console.error("Firestore error:", err);
-            alert("Error saving user data: " + err.message);
+            alert("Error creating user in database: " + err.message);
         });
+
     })
     .catch(err => {
         console.error("Auth error:", err);
