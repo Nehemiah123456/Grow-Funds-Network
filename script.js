@@ -10,56 +10,53 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-
-
- firebase.initializeApp(firebaseConfig);
+const app = firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.firestore();
+const db = firebase.database(); // Realtime Database
 const storage = firebase.storage();
 
-// ===== Register Function =====
+// Register function
 async function register() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const ssn = document.getElementById("ssn").value.trim();
-  const fileInput = document.getElementById("dl");
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const ssnFile = document.getElementById('ssn').value; // store as string or file later
+  const dlFile = document.getElementById('dl').files[0];
 
-  if (!email || !password || !ssn || fileInput.files.length === 0) {
-    alert("Please fill all fields and select your file.");
+  if (!email || !password) {
+    alert('Email and password are required.');
     return;
   }
 
-  const file = fileInput.files[0];
-
   try {
-    console.log("1️⃣ Creating user in Auth...");
+    // 1️⃣ Create user in Firebase Auth
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    const uid = userCredential.user.uid;
-    console.log("✅ User created with UID:", uid);
+    const user = userCredential.user;
+    const uid = user.uid;
 
-    console.log("2️⃣ Uploading file to Storage...");
-    const storageRef = storage.ref().child(`drivers_licenses/${uid}_${file.name}`);
-    await storageRef.put(file);
-    const fileURL = await storageRef.getDownloadURL();
-    console.log("✅ File uploaded. URL:", fileURL);
+    let dlURL = "";
 
-    console.log("3️⃣ Saving data to Firestore...");
-    await db.collection("users").doc(uid).set({
+    // 2️⃣ Upload DL file to Firebase Storage
+    if (dlFile) {
+      const storageRef = storage.ref(`driver_licenses/${uid}_${dlFile.name}`);
+      const snapshot = await storageRef.put(dlFile);
+      dlURL = await snapshot.ref.getDownloadURL();
+    }
+
+    // 3️⃣ Create user node in Realtime Database
+    await db.ref('users/' + uid).set({
       email: email,
-      ssn: ssn,
-      dlUrl: fileURL,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      ssn: ssnFile,
+      dlURL: dlURL,
+      balance: 0,
+      createdAt: new Date().toISOString()
     });
-    console.log("✅ Data saved to Firestore");
 
-    alert("Account created successfully!");
-    // Optional: redirect to login page
-    // window.location.href = "login.html";
+    alert('Account created successfully!');
+    window.location.href = 'dashboard.html'; // redirect to dashboard
 
   } catch (error) {
-    console.error("❌ Error:", error);
-    alert(error.message);
+    console.error(error);
+    alert('Error: ' + error.message);
   }
 }
 
