@@ -1,62 +1,63 @@
-const API = "https://YOUR_BACKEND_URL/api"; // example: http://localhost:5000/api
+import express from "express";
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import cors from "cors";
 
-// REGISTER
-async function registerUser(){
-  try{
-    const res = await fetch(`${API}/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: document.getElementById("email").value,
-        password: document.getElementById("password").value,
-        ssn: document.getElementById("ssn").value,
-        plan: document.getElementById("plan").value,
-        deposit: document.getElementById("deposit").value,
-        referrer: localStorage.getItem("referrer")
-      })
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// 🔗 MongoDB
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log("MongoDB Connected"))
+.catch(err => console.log(err));
+
+// 🧩 User model
+const UserSchema = new mongoose.Schema({
+  email: { type: String, unique: true },
+  password: String,
+  plan: String,
+  deposit: Number,
+  role: { type: String, default: "user" },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const User = mongoose.model("User", UserSchema);
+
+// 📝 REGISTER
+app.post("/api/register", async (req, res) => {
+  try {
+    const hashed = await bcrypt.hash(req.body.password, 12);
+
+    await User.create({
+      email: req.body.email,
+      password: hashed,
+      plan: req.body.plan,
+      deposit: req.body.deposit
     });
 
-    const data = await res.json();
-
-    if(data.success){
-      alert("Registration successful");
-      window.location.href = "login.html";
-    } else {
-      alert(data.error || "Registration failed");
-    }
-
-  } catch {
-    alert("Server error");
+    res.json({ success: true });
+  } catch (e) {
+    res.status(400).json({ error: "User already exists" });
   }
-}
+});
 
-// LOGIN
-async function loginUser(){
-  try{
-    const res = await fetch(`${API}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: document.getElementById("email").value,
-        password: document.getElementById("password").value
-      })
-    });
+// 🔐 LOGIN
+app.post("/api/login", async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+  if(!user) return res.status(401).json({ error: "Invalid login" });
 
-    const data = await res.json();
+  const ok = await bcrypt.compare(req.body.password, user.password);
+  if(!ok) return res.status(401).json({ error: "Invalid login" });
 
-    if(data.token){
-      localStorage.setItem("token", data.token);
+  const token = jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET
+  );
 
-      if(data.role === "admin"){
-        window.location.href = "admin/dashboard.html";
-      } else {
-        window.location.href = "dashboard.html";
-      }
-    } else {
-      alert("Invalid login");
-    }
+  res.json({ token, role: user.role });
+});
 
-  } catch {
-    alert("Server error");
-  }
-}
+// 🚀 Start
+app.listen(5000, () => console.log("Server running"));
