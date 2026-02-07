@@ -11,9 +11,51 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
+
+// ===== Register Function =====
+async function register() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const ssn = document.getElementById("ssn").value.trim();
+  const file = document.getElementById("dl").files[0];
+
+  if (!email || !password || !ssn || !file) {
+    alert("Please fill all fields and select your file.");
+    return;
+  }
+
+  try {
+    // 1️⃣ Create user in Firebase Auth
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    const uid = userCredential.user.uid;
+
+    // 2️⃣ Upload driver’s license file to Firebase Storage
+    const storageRef = storage.ref().child(`drivers_licenses/${uid}_${file.name}`);
+    await storageRef.put(file);
+
+    // Get file download URL
+    const fileURL = await storageRef.getDownloadURL();
+
+    // 3️⃣ Save user data to Firestore
+    await db.collection("users").doc(uid).set({
+      email: email,
+      ssn: ssn,
+      dlUrl: fileURL,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    alert("Account created successfully!");
+    // Optional: redirect to login page
+    window.location.href = "login.html";
+
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
 
 // Generate random referral code
 function generateReferral() {
