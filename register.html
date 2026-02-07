@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Register - Grow Funds Network</title>
 
-<!-- Firebase -->
+<!-- Firebase Scripts -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"></script>
 
 <!-- Your Script -->
-<script src="script.js"></script>
+<script src="script.js" defer></script>
 
 <style>
 body{display:flex;justify-content:center;align-items:center;min-height:100vh;background:#0f1223;color:#fff;font-family:sans-serif;}
@@ -51,7 +51,7 @@ a{color:#00ffa6;font-weight:bold;}
     <div id="depositProgress" class="progress-bar">0%</div>
   </div>
 
-  <button onclick="register()">Register Now</button>
+  <button id="registerBtn">Register Now</button>
   <p>Already have an account? <a href="login.html">Login here</a></p>
 </div>
 
