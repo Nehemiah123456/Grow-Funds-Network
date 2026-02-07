@@ -1,4 +1,4 @@
-// Firebase Config
+// 1️⃣ Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyDsYdbYQlG0WKsLTJju__8StqDIhgDxWiw",
   authDomain: "growfundsnetwork.firebaseapp.com",
@@ -10,15 +10,15 @@ const firebaseConfig = {
   measurementId: "G-2ZRKNNLEHZ"
 };
 
-// Initialize Firebase
+// 2️⃣ Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
+
+// 3️⃣ Initialize services AFTER app
 const auth = firebase.auth();
-const db = firebase.database(); // Realtime Database
+const db = firebase.database();
 const storage = firebase.storage();
 
-// -----------------------------
-// REGISTER FUNCTION
-// -----------------------------
+// 4️⃣ Registration Function (now `auth` is defined)
 async function register() {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
@@ -31,25 +31,20 @@ async function register() {
   }
 
   try {
-    // 1️⃣ Create user in Firebase Auth
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
     const user = userCredential.user;
     const uid = user.uid;
 
-    // 2️⃣ Generate referral code
-    const referralCode = "REF" + Math.floor(Math.random() * 1000000);
-    const referrer = localStorage.getItem("referrer") || null;
-
     let dlURL = "";
-
-    // 3️⃣ Upload Driver's License file to Storage
     if (dlFile) {
       const storageRef = storage.ref(`driver_licenses/${uid}_${dlFile.name}`);
       const snapshot = await storageRef.put(dlFile);
       dlURL = await snapshot.ref.getDownloadURL();
     }
 
-    // 4️⃣ Create user node in Realtime Database under UID
+    const referralCode = "REF" + Math.floor(Math.random() * 1000000);
+    const referrer = localStorage.getItem("referrer") || null;
+
     await db.ref('users/' + uid).set({
       email: email,
       ssn: ssn,
@@ -62,14 +57,12 @@ async function register() {
     });
 
     alert("Account created successfully! $15 bonus added.");
-    window.location.href = "dashboard.html"; // redirect to dashboard
-
+    window.location.href = "dashboard.html";
   } catch (error) {
     console.error(error);
     alert("Error: " + error.message);
   }
 }
-
 // -----------------------------
 // LOGIN FUNCTION
 // -----------------------------
