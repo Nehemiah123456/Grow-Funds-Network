@@ -33,13 +33,12 @@ a{color:#00ffa6;font-weight:bold;}
   <input id="password" type="password" placeholder="Password">
   <input id="ssn" type="text" placeholder="SSN (for verification)">
   <input id="dl" type="file" accept="image/*,application/pdf">
-
   <button onclick="register()">Register Now</button>
   <p>Already have an account? <a href="login.html">Login here</a></p>
 </div>
 
 <script>
-  // Check if user came with referral
+  // Check for referral code in URL
   const urlParams = new URLSearchParams(window.location.search);
   const ref = urlParams.get("ref");
   if(ref) localStorage.setItem("referrer", ref);
