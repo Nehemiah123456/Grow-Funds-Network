@@ -1,63 +1,43 @@
-import express from "express";
-import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import cors from "cors";
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
-// 🔗 MongoDB
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.log(err));
+// 1️⃣ Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/growFundsDB', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log('MongoDB connected'))
+  .catch(err => console.log(err));
 
-// 🧩 User model
-const UserSchema = new mongoose.Schema({
-  email: { type: String, unique: true },
-  password: String,
+// 2️⃣ Create a user schema
+const userSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  ssn: String,
   plan: String,
   deposit: Number,
-  role: { type: String, default: "user" },
-  createdAt: { type: Date, default: Date.now }
+  referrer: String
 });
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.model('User', userSchema);
 
-// 📝 REGISTER
-app.post("/api/register", async (req, res) => {
+// 3️⃣ Create registration endpoint
+app.post('/register', async (req, res) => {
+  const { email, password, ssn, plan, deposit, referrer } = req.body;
+  
   try {
-    const hashed = await bcrypt.hash(req.body.password, 12);
-
-    await User.create({
-      email: req.body.email,
-      password: hashed,
-      plan: req.body.plan,
-      deposit: req.body.deposit
-    });
-
-    res.json({ success: true });
-  } catch (e) {
-    res.status(400).json({ error: "User already exists" });
+    const newUser = new User({ email, password, ssn, plan, deposit, referrer });
+    await newUser.save();
+    res.status(201).json({ message: 'User registered!' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 });
 
-// 🔐 LOGIN
-app.post("/api/login", async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
-  if(!user) return res.status(401).json({ error: "Invalid login" });
-
-  const ok = await bcrypt.compare(req.body.password, user.password);
-  if(!ok) return res.status(401).json({ error: "Invalid login" });
-
-  const token = jwt.sign(
-    { id: user._id, role: user.role },
-    process.env.JWT_SECRET
-  );
-
-  res.json({ token, role: user.role });
-});
-
-// 🚀 Start
-app.listen(5000, () => console.log("Server running"));
+// 4️⃣ Start server
+app.listen(3000, () => console.log('Server running on http://localhost:3000'));
