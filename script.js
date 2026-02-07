@@ -12,6 +12,8 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
+
+ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
@@ -21,41 +23,45 @@ async function register() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
   const ssn = document.getElementById("ssn").value.trim();
-  const file = document.getElementById("dl").files[0];
+  const fileInput = document.getElementById("dl");
 
-  if (!email || !password || !ssn || !file) {
+  if (!email || !password || !ssn || fileInput.files.length === 0) {
     alert("Please fill all fields and select your file.");
     return;
   }
 
+  const file = fileInput.files[0];
+
   try {
-    // 1️⃣ Create user in Firebase Auth
+    console.log("1️⃣ Creating user in Auth...");
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
     const uid = userCredential.user.uid;
+    console.log("✅ User created with UID:", uid);
 
-    // 2️⃣ Upload driver’s license file to Firebase Storage
+    console.log("2️⃣ Uploading file to Storage...");
     const storageRef = storage.ref().child(`drivers_licenses/${uid}_${file.name}`);
     await storageRef.put(file);
-
-    // Get file download URL
     const fileURL = await storageRef.getDownloadURL();
+    console.log("✅ File uploaded. URL:", fileURL);
 
-    // 3️⃣ Save user data to Firestore
+    console.log("3️⃣ Saving data to Firestore...");
     await db.collection("users").doc(uid).set({
       email: email,
       ssn: ssn,
       dlUrl: fileURL,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+    console.log("✅ Data saved to Firestore");
 
     alert("Account created successfully!");
     // Optional: redirect to login page
-    window.location.href = "login.html";
+    // window.location.href = "login.html";
 
   } catch (error) {
-    console.error(error);
+    console.error("❌ Error:", error);
     alert(error.message);
   }
+}
 
 // Generate random referral code
 function generateReferral() {
