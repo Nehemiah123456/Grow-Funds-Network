@@ -12,8 +12,9 @@ app.use(bodyParser.json());
 mongoose.connect('mongodb+srv://websiteUser:YourPassword@cluster0.abcd123.mongodb.net/growFundsDB?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true
-}).then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.log(err));
 
 // 2️⃣ User schema
 const userSchema = new mongoose.Schema({
