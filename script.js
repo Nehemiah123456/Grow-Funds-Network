@@ -106,3 +106,11 @@ function login(){
     .then(()=> window.location = "dashboard.html")
     .catch(err => alert(err.message));
 }
+
+// -----------------------------
+// LINK REGISTER BUTTON AFTER PAGE LOAD
+// -----------------------------
+window.onload = function() {
+  const btn = document.getElementById('registerBtn');
+  if(btn) btn.onclick = register;
+};
