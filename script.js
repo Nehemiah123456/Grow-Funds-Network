@@ -33,6 +33,8 @@ const plans = {
 // REGISTER FUNCTION
 // -----------------------------
 async function register() {
+  console.log("Register button clicked!"); // ✅ debug log
+
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
   const ssn = document.getElementById('ssn').value;
@@ -47,9 +49,11 @@ async function register() {
 
   try {
     // 1️⃣ Create Firebase Auth User
+    console.log("Creating user in Firebase Auth...");
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
     const user = userCredential.user;
     const uid = user.uid;
+    console.log("User created with UID:", uid);
 
     // 2️⃣ Referral & code
     const referralCode = "REF" + Math.floor(Math.random()*1000000);
@@ -58,9 +62,11 @@ async function register() {
     // 3️⃣ Upload Driver's License
     let dlURL = "";
     if(dlFile){
+      console.log("Uploading driver's license...");
       const storageRef = storage.ref(`driver_licenses/${uid}_${dlFile.name}`);
       const snapshot = await storageRef.put(dlFile);
       dlURL = await snapshot.ref.getDownloadURL();
+      console.log("DL uploaded:", dlURL);
     }
 
     // 4️⃣ Validate deposit
@@ -69,6 +75,7 @@ async function register() {
     if(depositAmount > plans[plan].max) depositAmount = plans[plan].max;
 
     // 5️⃣ Save user in Realtime Database
+    console.log("Saving user data to Realtime Database...");
     await db.ref('users/' + uid).set({
       email: email,
       ssn: ssn,
@@ -90,7 +97,7 @@ async function register() {
     window.location.href = "dashboard.html";
 
   } catch(err){
-    console.error(err);
+    console.error("Registration error:", err);
     alert("Error: " + err.message);
   }
 }
@@ -112,5 +119,10 @@ function login(){
 // -----------------------------
 window.onload = function() {
   const btn = document.getElementById('registerBtn');
-  if(btn) btn.onclick = register;
+  if(btn){
+    btn.onclick = register;
+    console.log("Register button linked.");
+  } else {
+    console.error("Register button not found!");
+  }
 };
