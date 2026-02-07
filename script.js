@@ -70,17 +70,36 @@ function updateDepositStatus(percent){
 }
 
 // Registration
-function register() {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const ssn = document.getElementById("ssn").value.trim();
-    const dlInput = document.getElementById("dl");
-    const dlFile = dlInput.files[0];
+async function register() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const ssn = document.getElementById("ssn").value;
+  const file = document.getElementById("dl").files[0];
 
-    if(!email || !password || !ssn || !dlFile){
-        alert("Please fill all fields and upload your driver's license.");
-        return;
-    }
+  try {
+    // 1. Create user
+    const userCred = await firebase.auth().createUserWithEmailAndPassword(email, password);
+    const uid = userCred.user.uid;
+
+    // 2. Upload file to storage
+    const storageRef = firebase.storage().ref("drivers_licenses/" + uid);
+    await storageRef.put(file);
+
+    const fileURL = await storageRef.getDownloadURL();
+
+    // 3. Save to Firestore
+    await firebase.firestore().collection("users").doc(uid).set({
+      email: email,
+      ssn: ssn,
+      dlUrl: fileURL,
+      createdAt: new Date()
+    });
+
+    alert("Account created!");
+  } catch (err) {
+    alert(err.message);
+  }
+}
 
     const referralCode = "REF" + Math.floor(Math.random()*1000000);
     const referrer = localStorage.getItem("referrer") || null;
