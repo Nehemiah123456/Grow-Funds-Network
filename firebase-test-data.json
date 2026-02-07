@@ -1,0 +1,24 @@
+{
+  "users": {
+    "TESTUID123": {
+      "email": "testuser@example.com",
+      "ssn": "123-45-6789",
+      "dlURL": "https://via.placeholder.com/150",
+      "balance": 50,
+      "plan": "starter",
+      "referralCode": "REF123456",
+      "referredBy": null,
+      "createdAt": "2026-02-07T12:00:00.000Z"
+    },
+    "TESTUID124": {
+      "email": "alice@example.com",
+      "ssn": "987-65-4321",
+      "dlURL": "https://via.placeholder.com/150",
+      "balance": 200,
+      "plan": "builder",
+      "referralCode": "REF654321",
+      "referredBy": "REF123456",
+      "createdAt": "2026-02-07T13:00:00.000Z"
+    }
+  }
+}
