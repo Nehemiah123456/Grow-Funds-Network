@@ -1,128 +1,62 @@
-// -----------------------------
-// FIREBASE CONFIG & INIT
-// -----------------------------
-const firebaseConfig = {
-  apiKey: "AIzaSyDsYdbYQlG0WKsLTJju__8StqDIhgDxWiw",
-  authDomain: "growfundsnetwork.firebaseapp.com",
-  databaseURL: "https://growfundsnetwork-default-rtdb.firebaseio.com",
-  projectId: "growfundsnetwork",
-  storageBucket: "growfundsnetwork.firebasestorage.app",
-  messagingSenderId: "210373001610",
-  appId: "1:210373001610:web:0b70ef32f6710f669a4873",
-  measurementId: "G-2ZRKNNLEHZ"
-};
+const API = "https://YOUR_BACKEND_URL/api"; // example: http://localhost:5000/api
 
-// Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
-const storage = firebase.storage();
-
-// -----------------------------
-// PLAN LIMITS
-// -----------------------------
-const plans = {
-  starter: {min:10,max:97},
-  builder: {min:100,max:999},
-  income: {min:1000,max:9999},
-  premium: {min:10000,max:99999},
-  elite: {min:100000,max:1000000}
-};
-
-// -----------------------------
-// REGISTER FUNCTION
-// -----------------------------
-async function register() {
-  console.log("Register button clicked!"); // ✅ debug log
-
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  const ssn = document.getElementById('ssn').value;
-  const dlFile = document.getElementById('dl').files[0];
-  const plan = document.getElementById('planSelect').value;
-  const depositInput = parseFloat(document.getElementById('depositAmount').value) || 0;
-
-  if(!email || !password){
-    alert("Email and password are required.");
-    return;
-  }
-
-  try {
-    // 1️⃣ Create Firebase Auth User
-    console.log("Creating user in Firebase Auth...");
-    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    const user = userCredential.user;
-    const uid = user.uid;
-    console.log("User created with UID:", uid);
-
-    // 2️⃣ Referral & code
-    const referralCode = "REF" + Math.floor(Math.random()*1000000);
-    const referrer = localStorage.getItem("referrer") || null;
-
-    // 3️⃣ Upload Driver's License
-    let dlURL = "";
-    if(dlFile){
-      console.log("Uploading driver's license...");
-      const storageRef = storage.ref(`driver_licenses/${uid}_${dlFile.name}`);
-      const snapshot = await storageRef.put(dlFile);
-      dlURL = await snapshot.ref.getDownloadURL();
-      console.log("DL uploaded:", dlURL);
-    }
-
-    // 4️⃣ Validate deposit
-    let depositAmount = depositInput;
-    if(depositAmount < plans[plan].min) depositAmount = plans[plan].min;
-    if(depositAmount > plans[plan].max) depositAmount = plans[plan].max;
-
-    // 5️⃣ Save user in Realtime Database
-    console.log("Saving user data to Realtime Database...");
-    await db.ref('users/' + uid).set({
-      email: email,
-      ssn: ssn,
-      dlURL: dlURL,
-      balance: depositAmount,
-      plan: plan,
-      referralCode: referralCode,
-      referredBy: referrer,
-      createdAt: new Date().toISOString()
+// REGISTER
+async function registerUser(){
+  try{
+    const res = await fetch(`${API}/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
+        ssn: document.getElementById("ssn").value,
+        plan: document.getElementById("plan").value,
+        deposit: document.getElementById("deposit").value,
+        referrer: localStorage.getItem("referrer")
+      })
     });
 
-    // 6️⃣ Update progress bar
-    const progressBar = document.getElementById("depositProgress");
-    const percent = Math.min((depositAmount / plans[plan].max) * 100, 100);
-    progressBar.style.width = percent + "%";
-    progressBar.innerText = Math.round(percent) + "%";
+    const data = await res.json();
 
-    alert("Account created successfully! $15 bonus added.");
-    window.location.href = "dashboard.html";
+    if(data.success){
+      alert("Registration successful");
+      window.location.href = "login.html";
+    } else {
+      alert(data.error || "Registration failed");
+    }
 
-  } catch(err){
-    console.error("Registration error:", err);
-    alert("Error: " + err.message);
+  } catch {
+    alert("Server error");
   }
 }
 
-// -----------------------------
-// LOGIN FUNCTION
-// -----------------------------
-function login(){
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+// LOGIN
+async function loginUser(){
+  try{
+    const res = await fetch(`${API}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value
+      })
+    });
 
-  auth.signInWithEmailAndPassword(email, password)
-    .then(()=> window.location = "dashboard.html")
-    .catch(err => alert(err.message));
-}
+    const data = await res.json();
 
-// -----------------------------
-// LINK REGISTER BUTTON AFTER PAGE LOAD
-// -----------------------------
-window.onload = function() {
-  const btn = document.getElementById('registerBtn');
-  if(btn){
-    btn.onclick = register;
-    console.log("Register button linked.");
-  } else {
-    console.error("Register button not found!");
+    if(data.token){
+      localStorage.setItem("token", data.token);
+
+      if(data.role === "admin"){
+        window.location.href = "admin/dashboard.html";
+      } else {
+        window.location.href = "dashboard.html";
+      }
+    } else {
+      alert("Invalid login");
+    }
+
+  } catch {
+    alert("Server error");
   }
-};
+}
