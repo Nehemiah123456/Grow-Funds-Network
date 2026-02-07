@@ -125,6 +125,53 @@ function register() {
         console.error("Auth error:", err);
         alert("Error creating account: " + err.message);
     });
+type User @table {
+  displayName: String!
+  email: String!
+  createdAt: Timestamp!
+  photoUrl: String
+}
+
+type Portfolio @table {
+  user: User!
+  name: String!
+  createdAt: Timestamp!
+  description: String
+}
+
+type Asset @table {
+  symbol: String!
+  name: String!
+  assetType: String!
+  createdAt: Timestamp!
+  description: String
+  exchange: String
+}
+
+type Transaction @table {
+  user: User!
+  portfolio: Portfolio!
+  asset: Asset!
+  transactionType: String!
+  quantity: Float!
+  pricePerUnit: Float!
+  transactionDate: Timestamp!
+  createdAt: Timestamp!
+}
+
+type Watchlist @table {
+  user: User!
+  name: String!
+  createdAt: Timestamp!
+  description: String
+}
+
+type WatchlistItem @table {
+  watchlist: Watchlist!
+  asset: Asset!
+  addedAt: Timestamp!
+}
+
 }
 // Login
 function login() {
