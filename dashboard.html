@@ -5,12 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard - Grow Funds Network</title>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"></script>
-<script src="script.js"></script>
-
 <link rel="stylesheet" href="style.css">
 
 <style>
@@ -24,9 +18,9 @@
 <body>
 
 <h2 style="text-align:center;">Dashboard</h2>
+
 <div class="card">
   <h3>Deposit / Upgrade Plan</h3>
-  
   <label for="planSelect">Choose Plan:</label>
   <select id="planSelect">
     <option value="starter">Level 1: Starter ($10 - $97)</option>
@@ -35,10 +29,8 @@
     <option value="premium">Level 4: Premium ($10,000 - $99,999)</option>
     <option value="elite">Level 5: Elite ($100,000+)</option>
   </select>
-
   <input type="number" id="depositAmount" placeholder="Enter Deposit Amount">
   <button onclick="makeDeposit()">Submit Deposit</button>
-
   <p>Status: <span id="depositStatus">Incomplete</span></p>
   <div class="progress-bar"><div class="progress" id="depositProgress"></div></div>
   <p>Note: Actual payment details will be handled by support.</p>
@@ -84,16 +76,64 @@
 </div>
 
 <script>
-firebase.auth().onAuthStateChanged(user=>{
-  if(user){ loadDashboard(); loadCryptoPrices(); }
-  else{ window.location="login.html"; }
-});
-</script>
+// ===== MongoDB + Termux backend integration =====
+const userEmail = localStorage.getItem("userEmail");
+if(!userEmail){
+    alert("No user logged in!");
+    window.location.href = "login.html";
+}
 
-<script>
-  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+// Display email
+document.getElementById("userEmail").innerText = userEmail;
+
+// Load user data from backend
+async function loadDashboard(){
+    try {
+        const res = await fetch(`http://YOUR_PHONE_IP:3000/user/${userEmail}`);
+        const data = await res.json();
+        if(data.success){
+            document.getElementById("userPlan").innerText = data.user.plan;
+            document.getElementById("userBalance").innerText = data.user.deposit || 0;
+            document.getElementById("referralCode").innerText = data.user.referral || "N/A";
+            // Update progress bar
+            const progressPercent = Math.min((data.user.deposit / 100000) * 100, 100);
+            document.getElementById("depositProgress").style.width = progressPercent + "%";
+            document.getElementById("depositStatus").innerText = progressPercent>0 ? "In Progress" : "Incomplete";
+        } else {
+            alert("Could not load user data: " + (data.message || data.error));
+        }
+    } catch(err){
+        alert("Error connecting to server: " + err.message);
+        console.error(err);
+    }
+}
+
+// Call immediately
+loadDashboard();
+
+// ===== Deposit function (mock) =====
+function makeDeposit(){
+    const depositAmount = Number(document.getElementById("depositAmount").value);
+    const plan = document.getElementById("planSelect").value;
+    if(depositAmount>0){
+        alert(`Deposit of $${depositAmount} submitted for plan ${plan}. Support will process it.`);
+        document.getElementById("depositStatus").innerText = "In Progress";
+        document.getElementById("depositProgress").style.width = "50%";
+    } else{
+        alert("Enter a valid deposit amount.");
+    }
+}
+
+// ===== KYC Upload (mock) =====
+function uploadKYC(){
+    const file = document.getElementById("file").files[0];
+    if(file){
+        alert(`File ${file.name} uploaded. Support will verify KYC.`);
+    } else{
+        alert("Select a file to upload.");
+    }
+}
 </script>
-<script defer src="/_vercel/speed-insights/script.js"></script>
 
 </body>
 </html>
