@@ -53,4 +53,35 @@ async function registerUser() {
     alert("Server Error: " + err.message);
   }
 }
+// CHANGE THIS TO YOUR BACKEND URL IF USING VERCEL/BACKEND HOSTING
+const API_URL = "http://localhost:3000";
+
+async function registerUser() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const ssn = document.getElementById("ssn").value;
+
+  const response = await fetch(`${API_URL}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, ssn }),
+  });
+
+  const data = await response.json();
+  alert(data.message);
+}
+
+async function loginUser() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const response = await fetch(`${API_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = await response.json();
+  alert(data.message);
+}
 });
