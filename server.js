@@ -1,71 +1,86 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
-// ====== CONNECT TO MONGODB ATLAS ======
-mongoose.connect("mongodb+srv://Vercel-Admin-grow-funds-network:Deborah1234@grow-funds-network.wpenygm.mongodb.net/?appName=grow-funds-network")
-  .then(() => console.log("MongoDB Connected Successfully"))
-  .catch(err => console.log("MongoDB Error:", err));
+// --------------------
+//  CONNECT TO MONGODB
+// --------------------
+mongoose.connect(
+  "mongodb+srv://Vercel-Admin-grow-funds-network:Deborah1234@grow-funds-network.wpenygm.mongodb.net/?appName=grow-funds-network",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+)
+.then(() => console.log("MongoDB Connected Successfully"))
+.catch(err => console.error("Mongo Connection Error:", err));
 
-// ====== USER MODEL ======
-const User = mongoose.model("User", {
+
+// USER SCHEMA
+const UserSchema = new mongoose.Schema({
   email: String,
   password: String,
   ssn: String,
-  plan: String,
-  deposit: Number,
-  createdAt: { type: Date, default: Date.now }
 });
 
-// ====== CUSTOM PREFIX ======
-const prefix = "/backend";
+const User = mongoose.model("User", UserSchema);
 
 
-// ====== REGISTER ROUTE ======
-app.post(`${prefix}/register`, async (req, res) => {
+// --------------------
+//  REGISTER ROUTE
+// --------------------
+app.post("/register", async (req, res) => {
   try {
-    const exists = await User.findOne({ email: req.body.email });
-    if (exists) return res.json({ success: false, error: "Email already registered" });
+    const { email, password, ssn } = req.body;
 
-    const user = new User(req.body);
-    await user.save();
+    const exists = await User.findOne({ email });
+    if (exists) {
+      return res.json({ success: false, message: "Email already exists" });
+    }
 
-    res.json({ success: true, message: "User registered successfully" });
+    await User.create({ email, password, ssn });
+
+    res.json({ success: true, message: "Registration successful" });
+
   } catch (err) {
-    res.json({ success: false, error: err.message });
+    console.error(err);
+    res.json({ success: false, message: "Registration failed" });
   }
 });
 
 
-// ====== LOGIN ROUTE ======
-app.post(`${prefix}/login`, async (req, res) => {
-  const { email, password } = req.body;
+// --------------------
+//  LOGIN ROUTE
+// --------------------
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-  const user = await User.findOne({ email, password });
-  if (!user) return res.json({ success: false, message: "Invalid credentials" });
+    const user = await User.findOne({ email });
 
-  res.json({ success: true });
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    if (user.password !== password) {
+      return res.json({ success: false, message: "Wrong password" });
+    }
+
+    res.json({ success: true, message: "Login successful" });
+
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: "Login failed" });
+  }
 });
 
 
-// ====== GET USER BY EMAIL ======
-app.get(`${prefix}/user/:email`, async (req, res) => {
-  const user = await User.findOne(
-    { email: req.params.email },
-    "-_id email plan deposit createdAt"
-  );
-
-  if (!user) return res.json({ success: false });
-
-  res.json({ success: true, user });
-});
-
-
-// ====== START SERVER ======
-app.listen(3000, "0.0.0.0", () => {
-  console.log("Server running on port 3000");
-});
+// --------------------
+//  START SERVER
+// --------------------
+app.listen(3000, () => console.log("Server running on port 3000"));
