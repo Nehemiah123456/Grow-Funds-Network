@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 // ===== MongoDB Connection =====
-const mongoURI = "mongodb+srv://Growfundsnetwork:Deborah1234@grow-funds-network.wpenygm.mongodb.net/growfundsnetwork?retryWrites=true&w=majority";
+const mongoURI = "mongodb+srv://local:Deborah1234@grow-funds-network.wpenygm.mongodb.net/growfundsnetwork?retryWrites=true&w=majority";
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
