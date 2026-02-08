@@ -1,43 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - Grow Funds Network</title>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-<script src="script.js"></script>
-
+<title>Login – Grow Funds Network</title>
 <link rel="stylesheet" href="style.css">
-
-<style>
-body{display:flex;justify-content:center;align-items:center;min-height:100vh;}
-.card{width:100%;max-width:400px;padding:40px;background:#151a33;border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,0.5);text-align:center;}
-.card h2{margin-bottom:25px;color:#00ffa6;}
-input[type="email"], input[type="password"]{width:100%;padding:15px;margin:10px 0 20px 0;border:none;border-radius:10px;background:#1c2240;color:#fff;font-size:16px;}
-input::placeholder{color:#888;}
-button{width:100%;padding:15px;background:#00ffa6;color:#000;font-weight:bold;font-size:16px;border:none;border-radius:10px;cursor:pointer;transition:0.3s;}
-button:hover{background:#00cc85;}
-p{margin-top:15px;color:#ccc;}
-a{color:#00ffa6;font-weight:bold;}
-</style>
 </head>
 <body>
 
 <div class="card">
-  <h2>Login to Your Account</h2>
+  <h2>Login</h2>
 
-  <input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button onclick="loginUser()">Login</button>
-  <p>Don't have an account? <a href="register.html">Register here</a></p>
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="loginUser()">Login</button>
+
+  <p>No account? <a href="register.html">Register</a></p>
 </div>
 
 <script>
-  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+async function loginUser() {
+    const loginData = {
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
+    };
+
+    const res = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(loginData)
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+        window.location.href = "dashboard.html";
+    } else {
+        alert("Invalid login!");
+    }
+}
 </script>
-<script defer src="/_vercel/speed-insights/script.js"></script>
 
 </body>
 </html>
