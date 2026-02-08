@@ -6,9 +6,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ===== Connect to MongoDB =====
-// Replace <db_username> with your MongoDB username
-const mongoURI = "mongodb+srv://local:Deborah1234@grow-funds-network.wpenygm.mongodb.net/growfundsnetwork?retryWrites=true&w=majority";
+// ===== MongoDB Connection =====
+const mongoURI = "mongodb+srv://Growfundsnetwork:Deborah1234@grow-funds-network.wpenygm.mongodb.net/growfundsnetwork?retryWrites=true&w=majority";
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
@@ -24,7 +23,7 @@ const User = mongoose.model("User", {
   ssn: String,
   plan: String,
   deposit: Number,
-  referral: String, // optional
+  referral: String,
 });
 
 // ===== Register Route =====
@@ -46,7 +45,7 @@ app.post("/login", async (req, res) => {
   res.json({ success: true });
 });
 
-// ===== Get user info =====
+// ===== Get User Info =====
 app.get("/user/:email", async (req, res) => {
   try {
     const email = req.params.email;
