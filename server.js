@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 // ====== CONNECT TO MONGODB ATLAS ======
-mongoose.connect("YOUR_MONGODB_URL_HERE")
+mongoose.connect("mongodb+srv://Vercel-Admin-grow-funds-network:Deborah1234@grow-funds-network.wpenygm.mongodb.net/?appName=grow-funds-network")
   .then(() => console.log("MongoDB Connected Successfully"))
   .catch(err => console.log("MongoDB Error:", err));
 
