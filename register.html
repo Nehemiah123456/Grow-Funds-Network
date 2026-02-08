@@ -14,16 +14,13 @@
   <input id="email" type="email" placeholder="Email" required>
   <input id="password" type="password" placeholder="Password" required>
   <input id="ssn" type="text" placeholder="SSN (encrypted)">
-
   <select id="plan">
     <option value="starter">Starter</option>
     <option value="builder">Builder</option>
     <option value="income">Income</option>
     <option value="premium">Premium</option>
   </select>
-
   <input id="deposit" type="number" placeholder="Deposit Amount">
-
   <button type="button" onclick="registerUser()">Register</button>
 
   <p>Already have an account? <a href="login.html">Login</a></p>
@@ -37,28 +34,22 @@ async function registerUser() {
     const plan = document.getElementById("plan").value;
     const deposit = document.getElementById("deposit").value;
 
-    // Quick validation
     if(!email || !password){
         alert("Email and Password are required");
         return;
     }
 
-    console.log("Sending:", {email, password, ssn, plan, deposit}); // debug
-
     try {
-        const res = await fetch("http://10.30.85.137:3000/register", {
+        const res = await fetch("http://172.31.225.21:3000/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password, ssn, plan, deposit })
         });
 
         const data = await res.json();
-        console.log("Response:", data); // debug
-
         if(data.success){
             alert("Registration successful!");
-            // Optionally redirect to login page
-            // window.location.href = "login.html";
+            window.location.href = "login.html"; // redirect to login
         } else {
             alert("Registration failed: " + (data.error || "Unknown error"));
         }
