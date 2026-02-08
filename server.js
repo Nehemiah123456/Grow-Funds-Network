@@ -7,7 +7,8 @@ app.use(cors());
 app.use(express.json());
 
 // ===== Connect to MongoDB =====
-const mongoURI = "mongodb+srv://<db_username>:<db_password>@grow-funds-network.wpenygm.mongodb.net/growfundsnetwork?retryWrites=true&w=majority";
+// Replace <db_username> with your MongoDB username
+const mongoURI = "mongodb+srv://local:Deborah1234@grow-funds-network.wpenygm.mongodb.net/growfundsnetwork?retryWrites=true&w=majority";
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
@@ -16,6 +17,7 @@ mongoose.connect(mongoURI, {
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log("MongoDB Connection Error:", err));
 
+// ===== User Model =====
 const User = mongoose.model("User", {
   email: String,
   password: String,
