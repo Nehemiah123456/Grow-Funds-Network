@@ -6,13 +6,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ===== Connect to MongoDB Atlas =====
+// ===== Connect to MongoDB =====
 // Replace YOUR_MONGODB_ATLAS_URL with your real connection string
-mongoose.connect("mongodb+srv://<db_username>:<db_password>@grow-funds-network.wpenygm.mongodb.net/?appName=grow-funds-network")
+mongoose.connect("YOUR_MONGODB_ATLAS_URL")
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log("DB Error:", err));
 
-// ===== User Model =====
 const User = mongoose.model("User", {
   email: String,
   password: String,
@@ -27,7 +26,7 @@ app.post("/register", async (req, res) => {
     const user = new User(req.body);
     await user.save();
     res.json({ success: true, message: "User registered!" });
-  } catch (err) {
+  } catch(err) {
     res.json({ success: false, error: err.message });
   }
 });
