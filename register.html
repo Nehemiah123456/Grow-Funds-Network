@@ -13,50 +13,48 @@
 
   <input id="email" type="email" placeholder="Email" required>
   <input id="password" type="password" placeholder="Password" required>
-  <input id="ssn" type="text" placeholder="SSN (encrypted)">
+  <input id="ssn" type="text" placeholder="SSN (optional)">
+  
   <select id="plan">
     <option value="starter">Starter</option>
     <option value="builder">Builder</option>
     <option value="income">Income</option>
     <option value="premium">Premium</option>
   </select>
+
   <input id="deposit" type="number" placeholder="Deposit Amount">
-  <button type="button" onclick="registerUser()">Register</button>
+
+  <button onclick="registerUser()">Register</button>
 
   <p>Already have an account? <a href="login.html">Login</a></p>
 </div>
 
 <script>
+const backend = "https://growfundsnetwork.vercel.app/backend";
+
 async function registerUser() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const ssn = document.getElementById("ssn").value;
-    const plan = document.getElementById("plan").value;
-    const deposit = document.getElementById("deposit").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const ssn = document.getElementById("ssn").value;
+  const plan = document.getElementById("plan").value;
+  const deposit = Number(document.getElementById("deposit").value);
 
-    if(!email || !password){
-        alert("Email and Password are required");
-        return;
-    }
+  const data = { email, password, ssn, plan, deposit };
 
-    try {
-        const res = await fetch("http://172.31.225.21:3000/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password, ssn, plan, deposit })
-        });
+  const res = await fetch(`${backend}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
 
-        const data = await res.json();
-        if(data.success){
-            alert("Registration successful!");
-            window.location.href = "login.html"; // redirect to login
-        } else {
-            alert("Registration failed: " + (data.error || "Unknown error"));
-        }
-    } catch(err) {
-        alert("Error connecting to server: " + err.message);
-        console.error(err);
-    }
+  const result = await res.json();
+
+  if (result.success) {
+    alert("Registration successful!");
+    window.location.href = "login.html";
+  } else {
+    alert("Error: " + result.error);
+  }
 }
 </script>
 
