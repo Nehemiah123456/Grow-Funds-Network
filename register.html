@@ -5,51 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Register – Grow Funds Network</title>
 <link rel="stylesheet" href="style.css">
-<script src="script.js" defer></script>
 </head>
 <body>
+
 <div class="card">
   <h2>Create Account</h2>
 
   <input id="email" type="email" placeholder="Email" required>
-<input id="password" type="password" placeholder="Password" required>
-<input id="ssn" type="text" placeholder="SSN (encrypted)">
-<select id="plan">
+  <input id="password" type="password" placeholder="Password" required>
+  <input id="ssn" type="text" placeholder="SSN (encrypted)">
+
+  <select id="plan">
     <option value="starter">Starter</option>
     <option value="builder">Builder</option>
     <option value="income">Income</option>
     <option value="premium">Premium</option>
-</select>
-<input id="deposit" type="number" placeholder="Deposit Amount">
+  </select>
+
+  <input id="deposit" type="number" placeholder="Deposit Amount">
 
   <button type="button" onclick="registerUser()">Register</button>
-<script>
-async function registerUser() {
-    const user = {
-        email: document.getElementById("email").value,
-        password: document.getElementById("password").value,
-        ssn: document.getElementById("ssn").value,
-        plan: document.getElementById("plan").value,
-        deposit: document.getElementById("deposit").value
-    };
 
-    const res = await fetch("http://localhost:3000/register", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(user)
-    });
-
-    const data = await res.json();
-    alert(data.message);
-}
-</script>
   <p>Already have an account? <a href="login.html">Login</a></p>
 </div>
 
-<script>
-const params = new URLSearchParams(window.location.search);
-if(params.get("ref")) localStorage.setItem("referrer", params.get("ref"));
-</script>
 <script>
 async function registerUser() {
     const email = document.getElementById("email").value;
@@ -58,12 +37,13 @@ async function registerUser() {
     const plan = document.getElementById("plan").value;
     const deposit = document.getElementById("deposit").value;
 
-    console.log(email, password, ssn, plan, deposit); // check in browser console
-
+    // Quick validation
     if(!email || !password){
         alert("Email and Password are required");
         return;
     }
+
+    console.log("Sending:", {email, password, ssn, plan, deposit}); // debug
 
     try {
         const res = await fetch("http://YOUR_PHONE_IP:3000/register", {
@@ -73,18 +53,21 @@ async function registerUser() {
         });
 
         const data = await res.json();
-        console.log(data); // check response in console
+        console.log("Response:", data); // debug
 
         if(data.success){
             alert("Registration successful!");
+            // Optionally redirect to login page
+            // window.location.href = "login.html";
         } else {
             alert("Registration failed: " + (data.error || "Unknown error"));
         }
     } catch(err) {
         alert("Error connecting to server: " + err.message);
-        console.log(err);
+        console.error(err);
     }
 }
 </script>
+
 </body>
 </html>
