@@ -7,17 +7,22 @@ app.use(cors());
 app.use(express.json());
 
 // ===== Connect to MongoDB =====
-// Replace YOUR_MONGODB_ATLAS_URL with your real connection string
-mongoose.connect("YOUR_MONGODB_ATLAS_URL")
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log("DB Error:", err));
+const mongoURI = "mongodb+srv://<db_username>:<db_password>@grow-funds-network.wpenygm.mongodb.net/growfundsnetwork?retryWrites=true&w=majority";
+
+mongoose.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log("MongoDB Connected"))
+.catch(err => console.log("MongoDB Connection Error:", err));
 
 const User = mongoose.model("User", {
   email: String,
   password: String,
   ssn: String,
   plan: String,
-  deposit: Number
+  deposit: Number,
+  referral: String, // optional
 });
 
 // ===== Register Route =====
@@ -39,19 +44,19 @@ app.post("/login", async (req, res) => {
   res.json({ success: true });
 });
 
-// ===== Start Server =====
-app.listen(3000, "0.0.0.0", () => {
-  console.log("Server running on port 3000");
-});
-
 // ===== Get user info =====
 app.get("/user/:email", async (req, res) => {
   try {
     const email = req.params.email;
-    const user = await User.findOne({ email }, "-_id email plan deposit"); // exclude Mongo _id
+    const user = await User.findOne({ email }, "-_id email plan deposit referral");
     if (!user) return res.json({ success: false, message: "User not found" });
     res.json({ success: true, user });
   } catch(err) {
     res.json({ success: false, error: err.message });
   }
+});
+
+// ===== Start Server =====
+app.listen(3000, "0.0.0.0", () => {
+  console.log("Server running on port 3000");
 });
