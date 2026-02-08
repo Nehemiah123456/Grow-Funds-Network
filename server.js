@@ -1,17 +1,46 @@
-const express = require("express");const mongoose = require("mongoose");const cors = require("cors");
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
 
-const app = express();app.use(cors());app.use(express.json());
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-// CONNECT TO MONGODB ATLASmongoose.connect("mongodb+srv://Vercel-Admin-grow-funds-network:<db_password>@grow-funds-network.wpenygm.mongodb.net/?appName=grow-funds-network").then(() => console.log("DB Connected")).catch(err => console.log(err));
+// ===== Connect to MongoDB Atlas =====
+// Replace YOUR_MONGODB_ATLAS_URL with your real connection string
+mongoose.connect("mongodb+srv://<db_username>:<db_password>@grow-funds-network.wpenygm.mongodb.net/?appName=grow-funds-network")
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log("DB Error:", err));
 
-// USER SCHEMAconst User = mongoose.model("User", {email: String,password: String,ssn: String,plan: String,deposit: Number});
+// ===== User Model =====
+const User = mongoose.model("User", {
+  email: String,
+  password: String,
+  ssn: String,
+  plan: String,
+  deposit: Number
+});
 
-// REGISTER ROUTEapp.post("/register", async (req, res) => {const user = new User(req.body);await user.save();res.json({ message: "User registered successfully!" });});
+// ===== Register Route =====
+app.post("/register", async (req, res) => {
+  try {
+    const user = new User(req.body);
+    await user.save();
+    res.json({ success: true, message: "User registered!" });
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+});
 
-// LOGIN ROUTEapp.post("/login", async (req, res) => {const { email, password } = req.body;const user = await User.findOne({ email, password });
+// ===== Login Route =====
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email, password });
+  if (!user) return res.json({ success: false });
+  res.json({ success: true });
+});
 
-if (!user) return res.json({ success: false });
-
-res.json({ success: true });});
-
-app.listen(3000, () => console.log("Server running on port 3000"));
+// ===== Start Server =====
+app.listen(3000, "0.0.0.0", () => {
+  console.log("Server running on port 3000");
+});
