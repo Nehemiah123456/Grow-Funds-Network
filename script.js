@@ -8,7 +8,7 @@ async function registerUser() {
         deposit: document.getElementById("deposit").value
     };
 
-    const res = await fetch("http://YOUR_PHONE_IP:3000/register", {
+    const res = await fetch("http://172.31.225.21:3000/register", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(user)
