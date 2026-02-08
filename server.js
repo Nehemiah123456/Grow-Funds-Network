@@ -43,3 +43,15 @@ app.post("/login", async (req, res) => {
 app.listen(3000, "0.0.0.0", () => {
   console.log("Server running on port 3000");
 });
+
+// ===== Get user info =====
+app.get("/user/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+    const user = await User.findOne({ email }, "-_id email plan deposit"); // exclude Mongo _id
+    if (!user) return res.json({ success: false, message: "User not found" });
+    res.json({ success: true, user });
+  } catch(err) {
+    res.json({ success: false, error: err.message });
+  }
+});
