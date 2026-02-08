@@ -84,4 +84,38 @@ async function loginUser() {
   const data = await response.json();
   alert(data.message);
 }
+const API_URL = "http://localhost:5000"; // Or your deployed server
+
+// REGISTER
+async function registerUser() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const ssn = document.getElementById("ssn").value;
+  const plan = document.getElementById("plan").value;
+  const deposit = Number(document.getElementById("deposit").value);
+
+  const res = await fetch(`${API_URL}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, ssn, plan, deposit }),
+  });
+
+  const data = await res.json();
+  alert(data.message);
+}
+
+// LOGIN
+async function loginUser() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  const res = await fetch(`${API_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = await res.json();
+  alert(data.message);
+}
 });
