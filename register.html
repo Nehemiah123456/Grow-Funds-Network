@@ -46,7 +46,7 @@ async function registerUser() {
     console.log("Sending:", {email, password, ssn, plan, deposit}); // debug
 
     try {
-        const res = await fetch("http://YOUR_PHONE_IP:3000/register", {
+        const res = await fetch("http://10.30.85.137:3000/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password, ssn, plan, deposit })
