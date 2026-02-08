@@ -8,13 +8,18 @@ async function registerUser() {
         deposit: document.getElementById("deposit").value
     };
 
-    const res = await fetch("http://localhost:3000/register", {
+    const res = await fetch("http://YOUR_PHONE_IP:3000/register", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(user)
     });
 
     const data = await res.json();
-    alert(data.message);
+    
+    if(data.success){
+        alert("Registration successful!");
+    } else {
+        alert("Registration failed: " + data.error);
+    }
 }
 </script>
