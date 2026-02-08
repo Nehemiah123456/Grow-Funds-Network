@@ -50,5 +50,41 @@ async function registerUser() {
 const params = new URLSearchParams(window.location.search);
 if(params.get("ref")) localStorage.setItem("referrer", params.get("ref"));
 </script>
+<script>
+async function registerUser() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const ssn = document.getElementById("ssn").value;
+    const plan = document.getElementById("plan").value;
+    const deposit = document.getElementById("deposit").value;
+
+    console.log(email, password, ssn, plan, deposit); // check in browser console
+
+    if(!email || !password){
+        alert("Email and Password are required");
+        return;
+    }
+
+    try {
+        const res = await fetch("http://YOUR_PHONE_IP:3000/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password, ssn, plan, deposit })
+        });
+
+        const data = await res.json();
+        console.log(data); // check response in console
+
+        if(data.success){
+            alert("Registration successful!");
+        } else {
+            alert("Registration failed: " + (data.error || "Unknown error"));
+        }
+    } catch(err) {
+        alert("Error connecting to server: " + err.message);
+        console.log(err);
+    }
+}
+</script>
 </body>
 </html>
