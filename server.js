@@ -2,7 +2,7 @@ const express = require("express");const mongoose = require("mongoose");const co
 
 const app = express();app.use(cors());app.use(express.json());
 
-// CONNECT TO MONGODB ATLASmongoose.connect("YOUR_MONGODB_ATLAS_URL").then(() => console.log("DB Connected")).catch(err => console.log(err));
+// CONNECT TO MONGODB ATLASmongoose.connect("mongodb+srv://Vercel-Admin-grow-funds-network:<db_password>@grow-funds-network.wpenygm.mongodb.net/?appName=grow-funds-network").then(() => console.log("DB Connected")).catch(err => console.log(err));
 
 // USER SCHEMAconst User = mongoose.model("User", {email: String,password: String,ssn: String,plan: String,deposit: Number});
 
